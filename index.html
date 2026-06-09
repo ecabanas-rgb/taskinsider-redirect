@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Insider - Redirigiendo...</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            margin-bottom: 0.5rem;
+        }
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .message {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        .error {
+            background: rgba(255, 59, 48, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🔍</div>
+        <h1>Task Insider</h1>
+        <p class="tagline">Visibilidad total de tus proyectos</p>
+        <div class="spinner"></div>
+        <p class="message" id="status">Conectando con el servidor...</p>
+    </div>
+
+    <script>
+        const statusEl = document.getElementById('status');
+
+        // URL del archivo que contiene la URL actual de Cloudflare
+        const URL_FILE = 'url-actual.txt';
+
+        async function redirect() {
+            try {
+                statusEl.textContent = 'Obteniendo URL actual...';
+
+                // Obtener la URL actual desde el archivo
+                const response = await fetch(URL_FILE + '?t=' + Date.now());
+
+                if (!response.ok) {
+                    throw new Error('No se pudo obtener la URL');
+                }
+
+                const url = (await response.text()).trim();
+
+                if (!url || !url.startsWith('http')) {
+                    throw new Error('URL inválida');
+                }
+
+                statusEl.textContent = 'Redirigiendo a Task Insider...';
+
+                // Redirigir después de 500ms (para que se vea el mensaje)
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 500);
+
+            } catch (error) {
+                console.error('Error:', error);
+                statusEl.innerHTML = `
+                    <div class="error">
+                        <strong>⚠️ Error de conexión</strong><br>
+                        No se pudo conectar con Task Insider.<br>
+                        <small>Por favor, contacta al administrador.</small>
+                    </div>
+                `;
+            }
+        }
+
+        // Ejecutar al cargar la página
+        redirect();
+    </script>
+</body>
+</html>
